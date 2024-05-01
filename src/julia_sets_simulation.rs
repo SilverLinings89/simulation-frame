@@ -193,7 +193,7 @@ impl Simulate for JuliaSetSimulation {
         JuliaSetParameters::parameter_descriptions()
     }
 
-    fn get_name() -> String {
+    fn get_name(&self) -> String {
         "JuliaSets".to_string()
     }
 }
