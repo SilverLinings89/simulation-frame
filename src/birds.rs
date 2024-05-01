@@ -111,14 +111,9 @@ pub struct BirdSimulation{
 
 }
 
-impl Simulate for BirdSimulation {
-    type Parameters = BirdSimulationParameters;
-
-    fn new(params: SimulationParameters) -> Self {
-        let par = BirdSimulationParameters::from_parameters(params);
-            BirdSimulation {
-                params: par
-            }
+impl Simulation for BirdSimulation {
+    fn set_parameters(&self, params: SimulationParameters) {
+        &self.params = BirdSimulationParameters::from_parameters(params);
     }
 
     fn run(&self) -> Result<(), String> {
@@ -126,7 +121,7 @@ impl Simulate for BirdSimulation {
         Ok(())
     }
 
-    fn parameter_descriptions() -> Vec<ParameterDescription> {
+    fn parameter_descriptions(&self) -> Vec<ParameterDescription> {
         BirdSimulationParameters::parameter_descriptions()
     }
 

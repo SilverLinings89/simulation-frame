@@ -171,17 +171,11 @@ impl JuliaSetParameters {
 #[derive(Debug, std::default::Default, PartialEq)]
 pub struct JuliaSetSimulation{
     pub params: JuliaSetParameters
-
 }
 
-impl Simulate for JuliaSetSimulation {
-    type Parameters = JuliaSetParameters;
-
-    fn new(params: SimulationParameters) -> Self {
-        let par = JuliaSetParameters::from_parameters(params);
-            JuliaSetSimulation {
-                params: par
-            }
+impl Simulation for JuliaSetSimulation {
+    fn set_parameters(&self, params: SimulationParameters) {
+        &self.params = JuliaSetParameters::from_parameters(params);
     }
 
     fn run(&self) -> Result<(), String> {
@@ -189,7 +183,7 @@ impl Simulate for JuliaSetSimulation {
         Ok(())
     }
 
-    fn parameter_descriptions() -> Vec<ParameterDescription> {
+    fn parameter_descriptions(&self) -> Vec<ParameterDescription> {
         JuliaSetParameters::parameter_descriptions()
     }
 
