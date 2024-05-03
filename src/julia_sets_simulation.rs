@@ -12,7 +12,7 @@ const DEFAULT_MAX_ITER: u32 = 1000;
 const DEFAULT_ESCAPE_RADIUS: f64 = 2.0;
 
 
-#[derive(Debug, Serialize, Deserialize, std::default::Default, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct JuliaSetParameters {
     pub width: u32,
     pub height: u32,
@@ -21,6 +21,19 @@ pub struct JuliaSetParameters {
     pub max_iter: u32,
     pub escape_radius: f64,
 
+}
+
+impl std::default::Default for JuliaSetParameters {
+    fn default() -> Self {
+        JuliaSetParameters {
+            width: DEFAULT_WIDTH,
+            height: DEFAULT_HEIGHT,
+            c_real: DEFAULT_C_REAL,
+            c_imaginary: DEFAULT_C_IMAGINARY,
+            max_iter: DEFAULT_MAX_ITER,
+            escape_radius: DEFAULT_ESCAPE_RADIUS,
+        }
+    }
 }
 
 impl JuliaSetParameters {
@@ -89,51 +102,42 @@ impl JuliaSetParameters {
         ]
     }
 
-    pub fn from_parameters(params: SimulationParameters) -> Self {
-        let mut ret = JuliaSetParameters {
-            width: DEFAULT_WIDTH,
-            height: DEFAULT_HEIGHT,
-            c_real: DEFAULT_C_REAL,
-            c_imaginary: DEFAULT_C_IMAGINARY,
-            max_iter: DEFAULT_MAX_ITER,
-            escape_radius: DEFAULT_ESCAPE_RADIUS,
-        };
+    pub fn from_parameters(&mut self, params: SimulationParameters) {
         for p in params.params {
             match p.name.as_str() {
                 "width" => {
                     if let ParameterType::UnsignedInteger(value) = p.value {
-                        ret.width = value;
+                        self.width = value;
                     }
                 }
                 "height" => {
                     if let ParameterType::UnsignedInteger(value) = p.value {
-                        ret.height = value;
+                        self.height = value;
                     }
                 }
                 "c_real" => {
                     if let ParameterType::Float(value) = p.value {
-                        ret.c_real = value;
+                        self.c_real = value;
                     }
                 }
                 "c_imaginary" => {
                     if let ParameterType::Float(value) = p.value {
-                        ret.c_imaginary = value;
+                        self.c_imaginary = value;
                     }
                 }
                 "max_iter" => {
                     if let ParameterType::UnsignedInteger(value) = p.value {
-                        ret.max_iter = value;
+                        self.max_iter = value;
                     }
                 }
                 "escape_radius" => {
                     if let ParameterType::Float(value) = p.value {
-                        ret.escape_radius = value;
+                        self.escape_radius = value;
                     }
                 }
                 _ => {}
             }
         }
-        return ret;
     }
 
     pub fn run(&self) -> DynamicImage {
@@ -168,14 +172,22 @@ impl JuliaSetParameters {
     }
 }
 
-#[derive(Debug, std::default::Default, PartialEq)]
+#[derive(Debug)]
 pub struct JuliaSetSimulation{
     pub params: JuliaSetParameters
 }
 
+impl Default for JuliaSetSimulation {
+    fn default() -> Self {
+        JuliaSetSimulation {
+            params: JuliaSetParameters::default()
+        }
+    }
+}
+
 impl Simulation for JuliaSetSimulation {
-    fn set_parameters(&self, params: SimulationParameters) {
-        &self.params = JuliaSetParameters::from_parameters(params);
+    fn set_parameters(&mut self, params: SimulationParameters) {
+        self.params.from_parameters(params);
     }
 
     fn run(&self) -> Result<(), String> {

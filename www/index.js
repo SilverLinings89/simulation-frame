@@ -1,3 +1,4 @@
 import * as wasm from "simulation-frame";
 
-wasm.greet();
+var data = wasm.start();
+console.log(data);

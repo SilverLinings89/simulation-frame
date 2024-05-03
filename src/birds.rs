@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use image::{DynamicImage, GenericImage, Rgba};
+use image::{DynamicImage};
 
 pub use crate::simulation::*;
 
@@ -9,13 +9,25 @@ const DEFAULT_MAX_ITER: u32 = 1000;
 const DEFAULT_N_BIRDS: u32 = 50;
 const DEFAULT_N_ITER: u32 = 1000;
 
-#[derive(Debug, Serialize, Deserialize, std::default::Default, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BirdSimulationParameters {
     pub width: u32,
     pub height: u32,
     pub max_iter: u32,
     pub n_birds: u32,
     pub n_iter: u32
+}
+
+impl std::default::Default for BirdSimulationParameters {
+    fn default() -> Self {
+        BirdSimulationParameters {
+            width: DEFAULT_WIDTH,
+            height: DEFAULT_HEIGHT,
+            max_iter: DEFAULT_MAX_ITER,
+            n_birds: DEFAULT_N_BIRDS,
+            n_iter: DEFAULT_N_ITER
+        }
+    }
 }
 
 impl BirdSimulationParameters {
@@ -64,40 +76,32 @@ impl BirdSimulationParameters {
         ]
     }
 
-    pub fn from_parameters(params: SimulationParameters) -> Self {
-        let mut ret = BirdSimulationParameters {
-            width: DEFAULT_WIDTH,
-            height: DEFAULT_HEIGHT,
-            max_iter: DEFAULT_MAX_ITER,
-            n_iter: DEFAULT_N_ITER,
-            n_birds: DEFAULT_N_BIRDS
-        };
+    pub fn from_parameters(&mut self, params: SimulationParameters) {
         for p in params.params {
             match p.name.as_str() {
                 "width" => {
                     if let ParameterType::UnsignedInteger(value) = p.value {
-                        ret.width = value;
+                        self.width = value;
                     }
                 }
                 "height" => {
                     if let ParameterType::UnsignedInteger(value) = p.value {
-                        ret.height = value;
+                        self.height = value;
                     }
                 }
                 "max_iter" => {
                     if let ParameterType::UnsignedInteger(value) = p.value {
-                        ret.max_iter = value;
+                        self.max_iter = value;
                     }
                 }
                 "n_birds" => {
                     if let ParameterType::UnsignedInteger(value) = p.value {
-                        ret.n_iter = value;
+                        self.n_iter = value;
                     }
                 }
                 _ => {}
             }
         }
-        return ret;
     }
 
     pub fn run(&self) -> DynamicImage {
@@ -105,15 +109,23 @@ impl BirdSimulationParameters {
     }
 }
 
-#[derive(Debug, std::default::Default, PartialEq)]
+#[derive(Debug)]
 pub struct BirdSimulation{
     pub params: BirdSimulationParameters
 
 }
 
+impl Default for BirdSimulation {
+    fn default() -> Self {
+        BirdSimulation {
+            params: BirdSimulationParameters::default()
+        }
+    }    
+}
+
 impl Simulation for BirdSimulation {
-    fn set_parameters(&self, params: SimulationParameters) {
-        &self.params = BirdSimulationParameters::from_parameters(params);
+    fn set_parameters(&mut self, params: SimulationParameters) {
+        self.params.from_parameters(params);
     }
 
     fn run(&self) -> Result<(), String> {
